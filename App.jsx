@@ -1,8 +1,14 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Ionicons } from '@expo/vector-icons';
 import AppNavigator from './src/navigation/AppNavigator.jsx';
+import { initializeDatabase } from './src/storage/storage.jsx';
 
 const COLORS = {
   background: '#101114',
@@ -14,39 +20,49 @@ const COLORS = {
   border: '#30333A',
 };
 
-const CHECKS = [
-  'Expo project created',
-  'JSX entry point configured',
-  'Dependencies installed',
-  'Folder structure ready',
-];
-
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState(null);
 
-      <View style={styles.iconCircle}>
-        <Ionicons name="camera" size={44} color={COLORS.primary} />
+  const setupDatabase = useCallback(async () => {
+    try {
+      setError(null);
+      await initializeDatabase();
+      setReady(true);
+    } catch (e) {
+      setError(e.message || 'Unknown database error');
+    }
+  }, []);
+
+  useEffect(() => {
+    setupDatabase();
+  }, [setupDatabase]);
+
+  // Error state
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <StatusBar style="light" />
+        <Text style={styles.errorTitle}>Could not open the database</Text>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity style={styles.button} onPress={setupDatabase}>
+          <Text style={styles.buttonText}>Try again</Text>
+        </TouchableOpacity>
       </View>
+    );
+  }
 
-      <Text style={styles.title}>LensLog</Text>
-      <Text style={styles.subtitle}>Offline Photography Companion</Text>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Phase 1 – Setup</Text>
-        {CHECKS.map((item) => (
-          <View key={item} style={styles.row}>
-            <Ionicons name="checkmark-circle" size={20} color={COLORS.primary} />
-            <Text style={styles.rowText}>{item}</Text>
-          </View>
-        ))}
+  // Loading state
+  if (!ready) {
+    return (
+      <View style={styles.center}>
+        <StatusBar style="light" />
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text style={styles.loadingText}>Preparing LensLog…</Text>
       </View>
-    </View>
-  );
-}
+    );
+  }
 
-export default function App() {
   return (
     <>
       <StatusBar style="light" />
@@ -56,58 +72,31 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  center: {
     flex: 1,
     backgroundColor: COLORS.background,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
   },
-  iconCircle: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    alignItems: 'center',
-    justifyContent: 'center',
+  loadingText: { color: COLORS.muted, fontSize: 15, marginTop: 16 },
+  errorTitle: {
+    color: COLORS.white,
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  errorText: {
+    color: COLORS.muted,
+    fontSize: 14,
+    textAlign: 'center',
     marginBottom: 20,
   },
-  title: {
-    color: COLORS.white,
-    fontSize: 32,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+  button: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
   },
-  subtitle: {
-    color: COLORS.muted,
-    fontSize: 15,
-    marginTop: 4,
-    marginBottom: 32,
-  },
-  card: {
-    width: '100%',
-    backgroundColor: COLORS.card,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 20,
-  },
-  cardTitle: {
-    color: COLORS.primary,
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 14,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  rowText: {
-    color: COLORS.white,
-    fontSize: 15,
-    marginLeft: 10,
-  },
+  buttonText: { color: COLORS.background, fontSize: 16, fontWeight: '700' },
 });
