@@ -156,6 +156,7 @@ export async function getIdeas(searchText = '', category = 'All') {
 
 export async function getIdeaById(id) {
   try {
+    if (id === undefined || id === null) return null;
     const db = await getReadyDb();
     const idea = await db.getFirstAsync(
       `SELECT ${IDEA_COLUMNS} FROM ideas i WHERE i.id = ?`,
@@ -199,6 +200,7 @@ export async function getShoots(searchText = '', category = 'All') {
 
 export async function getShootById(id) {
   try {
+    if (id === undefined || id === null) return null;
     const db = await getReadyDb();
     const shoot = await db.getFirstAsync(
       `SELECT ${SHOOT_COLUMNS} FROM shoots WHERE id = ?`,
