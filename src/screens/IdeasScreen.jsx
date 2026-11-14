@@ -40,12 +40,13 @@ export default function IdeasScreen({ navigation, route }) {
 
   // If another screen opens this tab with { category }, apply it.
   // (The Categories screen will use this in Phase 6.)
-  const routeCategory = route && route.params ? route.params.category : undefined;
+    const routeCategory = route && route.params ? route.params.category : undefined;
+  const routeStamp = route && route.params ? route.params.stamp : undefined;
   useEffect(() => {
     if (routeCategory) {
       setCategory(routeCategory);
     }
-  }, [routeCategory]);
+  }, [routeCategory, routeStamp]);
 
   const loadIdeas = useCallback(async () => {
     const thisRequest = ++requestId.current;
