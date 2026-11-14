@@ -291,3 +291,15 @@ export const SEED_IDEAS = [
     shutterSpeed: '1/125s',
   },
 ];
+
+export const CATEGORY_ICONS = {
+  Portrait: 'person',
+  Landscape: 'image',
+  Street: 'walk',
+  Nature: 'leaf',
+  Wildlife: 'paw',
+  Macro: 'flower',
+  Architecture: 'business',
+  Night: 'moon',
+  Food: 'restaurant',
+};
