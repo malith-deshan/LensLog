@@ -73,7 +73,7 @@ function MainTabs() {
         },
       })}
     >
-      <Tab.Screen name="Dashboard" component={DashboardScreen} />
+      <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ headerTitle: 'LensLog' }} />
       <Tab.Screen name="Ideas" component={IdeasScreen} />
       <Tab.Screen name="Journal" component={JournalScreen} />
       <Tab.Screen name="Favorites" component={FavoritesScreen} />
